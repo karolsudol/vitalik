@@ -18,7 +18,7 @@ func PrintEvents()  {
 	log.Fatal(err)
 	}
 
-	contractAddress := common.HexToAddress("0xb93A7A27651F8CfF100a32D8762E1eA51Fc56d72")
+	contractAddress := common.HexToAddress("0xa883d9C6F7FC4baB52AcD2E42E51c4c528d7F7D3")
     query := ethereum.FilterQuery{
         Addresses: []common.Address{contractAddress},
     }

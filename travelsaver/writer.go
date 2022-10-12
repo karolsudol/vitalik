@@ -3,6 +3,7 @@ package travelsaver
 import (
 	"context"
 	"crypto/ecdsa"
+	"encoding/binary"
 	"fmt"
 	"log"
 	"math/big"
@@ -15,12 +16,12 @@ import (
 
 func Write()  {
 
-	client, err := ethclient.Dial("wss://alfajores-forno.celo-testnet.org/ws")
+	client, err := ethclient.Dial("https://alfajores-forno.celo-testnet.org")
 	if err != nil {
 	log.Fatal(err)
 	}
 
-	privateKey, err := crypto.HexToECDSA("fad9c8855b740a0b7ed4c221dbad0f33a83a49cad6b3fe8d5817ac83d38b6a19")
+	privateKey, err := crypto.HexToECDSA("42497423a6d4c1542322c024b9711a35cd9e29b11adab83bd5e5ff28f468194e")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,17 +49,17 @@ func Write()  {
 	auth.GasLimit = uint64(300000) // in units
 	auth.GasPrice = gasPrice
 
-	address := common.HexToAddress("0x147B8eb97fD247D06C4006D269c90C1908Fb5D54")
+	address := common.HexToAddress("0xa883d9C6F7FC4baB52AcD2E42E51c4c528d7F7D3")
 	instance, err := NewTravelSaver(address, client)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	operatorPlanID_ := big.NewInt(1)
-	operatorUserID_ := big.NewInt(1)
+	operatorPlanID_ := big.NewInt(2)
+	operatorUserID_ := big.NewInt(2)
 	amountPerInterval := big.NewInt(1)
-	totalIntervals := big.NewInt(1)
-	intervalLength := big.NewInt(1)
+	totalIntervals := big.NewInt(3)
+	intervalLength := big.NewInt(10)
 	// copy(operatorPlanID_[:], []byte(1))
 	// copy(value[:], []byte("bar"))
 	// copy(key[:], []byte("foo"))
@@ -70,7 +71,8 @@ func Write()  {
 	}
 
 	fmt.Printf("tx sent: %s\n", tx.Hash().Hex()) 
-	fmt.Printf("tx data:
+	fmt.Println(binary.BigEndian.Uint64(tx.Data()))
+	tx.Value()
 
 
 
