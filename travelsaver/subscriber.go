@@ -122,12 +122,12 @@ func PrintEvents()  {
     logCreatedPaymentPlanSigHash := crypto.Keccak256Hash(logCreatedPaymentPlanSig)
     logCreatedTravelPlanSigHash := crypto.Keccak256Hash(logCreatedTravelPlanSig)
     logStartPaymentPlanIntervalSigHash := crypto.Keccak256Hash(logStartPaymentPlanIntervalSig)
-    LogContributeToTravelPlanSigHash := crypto.Keccak256Hash(LogContributeToTravelPlanSig)
+    logContributeToTravelPlanSigHash := crypto.Keccak256Hash(LogContributeToTravelPlanSig)
     logClaimTravelPlanSigHash := crypto.Keccak256Hash(logClaimTravelPlanSig)
     logTransferSigHash := crypto.Keccak256Hash(logTransferSig)
     logCancelPaymentPlanSigHash := crypto.Keccak256Hash(logCancelPaymentPlanSig)
     logPaymentPlanIntervalEndedSigHash := crypto.Keccak256Hash(logPaymentPlanIntervalEndedSig)
-    LogEndPaymentPlanSigHash := crypto.Keccak256Hash(logEndPaymentPlanSig)
+    logEndPaymentPlanSigHash := crypto.Keccak256Hash(logEndPaymentPlanSig)
 
 
 
@@ -150,31 +150,79 @@ func PrintEvents()  {
             
             case logCreatedTravelPlanSigHash.Hex():
                 fmt.Printf("Log Name: CreatedTravelPlan\n")
+                var createdTravelPlanEvent LogCreatedTravelPlan
+                err := contractAbi.UnpackIntoInterface(&createdTravelPlanEvent,"CreatedTravelPlan", vLog.Data)
+                if err != nil {
+                    log.Fatal(err)
+                }
+                prettyPrint(createdTravelPlanEvent)
+                
             
             case logStartPaymentPlanIntervalSigHash.Hex():
                 fmt.Printf("Log Name: StartPaymentPlanInterval\n")
+                var startPaymentPlanIntervalEvent LogStartPaymentPlanInterval
+                err := contractAbi.UnpackIntoInterface(&startPaymentPlanIntervalEvent,"StartPaymentPlanInterval", vLog.Data)
+                if err != nil {
+                    log.Fatal(err)
+                }
+                prettyPrint(startPaymentPlanIntervalEvent)
             
-            case LogContributeToTravelPlanSigHash.Hex():
+            case logContributeToTravelPlanSigHash.Hex():
                 fmt.Printf("Log Name: ContributeToTravelPlan\n")
-            
+                var contributeToTravelPlanEvent LogContributeToTravelPlan
+                err := contractAbi.UnpackIntoInterface(&contributeToTravelPlanEvent,"ContributeToTravelPlan", vLog.Data)
+                if err != nil {
+                    log.Fatal(err)
+                }
+                prettyPrint(contributeToTravelPlanEvent)
+
             case logClaimTravelPlanSigHash.Hex():
                 fmt.Printf("Log Name: ClaimTravelPlan\n")
+                var claimTravelPlanEvent LogClaimTravelPlan
+                err := contractAbi.UnpackIntoInterface(&claimTravelPlanEvent,"ClaimTravelPlan", vLog.Data)
+                if err != nil {
+                    log.Fatal(err)
+                }
+                prettyPrint(claimTravelPlanEvent)
+            
             
             case logTransferSigHash.Hex():
                 fmt.Printf("Log Name: Transfer\n")
-            
+                var transferEvent LogTransfer
+                err := contractAbi.UnpackIntoInterface(&transferEvent,"Transfer", vLog.Data)
+                if err != nil {
+                    log.Fatal(err)
+                }
+                prettyPrint(transferEvent)
+
             case logCancelPaymentPlanSigHash.Hex():
                 fmt.Printf("Log Name: CancelPaymentPlan\n")
+                var cancelPaymentPlanEvent LogCancelPaymentPlan
+                err := contractAbi.UnpackIntoInterface(&cancelPaymentPlanEvent,"CancelPaymentPlan", vLog.Data)
+                if err != nil {
+                    log.Fatal(err)
+                }
+                prettyPrint(cancelPaymentPlanEvent)
 
             case logPaymentPlanIntervalEndedSigHash.Hex():
                 fmt.Printf("Log Name: PaymentPlanIntervalEnded\n")
+                var paymentPlanIntervalEndedEvent LogPaymentPlanIntervalEnded
+                err := contractAbi.UnpackIntoInterface(&paymentPlanIntervalEndedEvent,"PaymentPlanIntervalEnded", vLog.Data)
+                if err != nil {
+                    log.Fatal(err)
+                }
+                prettyPrint(paymentPlanIntervalEndedEvent)
 
-            case LogEndPaymentPlanSigHash.Hex():
+            case logEndPaymentPlanSigHash.Hex():
                 fmt.Printf("Log Name: EndPaymentPlan\n")
+                var endPaymentPlanEvent LogEndPaymentPlan
+                err := contractAbi.UnpackIntoInterface(&endPaymentPlanEvent,"EndPaymentPlan", vLog.Data)
+                if err != nil {
+                    log.Fatal(err)
+                }
+                prettyPrint(endPaymentPlanEvent)
             }
             
-            
-
         }
     }
 
