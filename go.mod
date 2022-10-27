@@ -7,7 +7,8 @@ require github.com/ethereum/go-ethereum v1.10.25
 require (
 	cloud.google.com/go v0.104.0 // indirect
 	cloud.google.com/go/bigquery v1.43.0 // indirect
-	cloud.google.com/go/compute v1.11.0 // indirect
+	cloud.google.com/go/compute v1.12.1 // indirect
+	cloud.google.com/go/compute/metadata v0.1.1 // indirect
 	cloud.google.com/go/iam v0.6.0 // indirect
 	github.com/StackExchange/wmi v0.0.0-20180116203802-5d049714c4a6 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect

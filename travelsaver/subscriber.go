@@ -109,6 +109,23 @@ func insertRowsBQtravelPlan(ctx context.Context, projectID, datasetID, tableID s
 	return nil
 }
 
+func insertRowsBQtravelPlanClaim(ctx context.Context, projectID, datasetID, tableID string, clientBQ *bigquery.Client, log LogClaimTravelPlan) error {
+
+	inserter := clientBQ.Dataset(datasetID).Table(tableID).Inserter()
+	items := []*TravelPlanBQ{
+
+		{ID: int(log.ID.Int64()),
+
+			ClaimedAt: time.Now(),
+			Claimed:   true,
+		},
+	}
+	if err := inserter.Put(ctx, items); err != nil {
+		return err
+	}
+	return nil
+}
+
 type PaymentPlanBQ struct {
 	ID                 int       `bigquery:"ID"`
 	Owner              string    `bigquery:"Owner"`
@@ -124,7 +141,7 @@ type PaymentPlanBQ struct {
 	CancelledAt        time.Time `bigquery:"CancelledAt"`
 }
 
-func insertRowsBQpaymentPlan(ctx context.Context, projectID, datasetID, tableID string, clientBQ *bigquery.Client, log LogCreatedPaymentPlan) error {
+func insertRowsBQpaymentPlanStart(ctx context.Context, projectID, datasetID, tableID string, clientBQ *bigquery.Client, log LogCreatedPaymentPlan) error {
 
 	inserter := clientBQ.Dataset(datasetID).Table(tableID).Inserter()
 	items := []*PaymentPlanBQ{
@@ -147,6 +164,75 @@ func insertRowsBQpaymentPlan(ctx context.Context, projectID, datasetID, tableID 
 	return nil
 }
 
+func insertRowsBQpaymentPlanEnd(ctx context.Context, projectID, datasetID, tableID string, clientBQ *bigquery.Client, log LogEndPaymentPlan) error {
+
+	inserter := clientBQ.Dataset(datasetID).Table(tableID).Inserter()
+	items := []*PaymentPlanBQ{
+
+		{ID: int(log.PaymentPlan.ID.Int64()),
+			Owner:              string(log.PaymentPlan.Sender.Hex()),
+			TravelPlanID:       int(log.PaymentPlan.TravelPlanID.Int64()),
+			TotalAmount:        float64(log.PaymentPlan.TotalAmount.Int64()),
+			AmountSent:         float64(log.PaymentPlan.AmountSent.Int64()),
+			AmountPerInterval:  float64(log.PaymentPlan.AmountPerInterval.Int64()),
+			TotalIntervals:     int(log.PaymentPlan.TotalIntervals.Int64()),
+			IntervalsProcessed: int(log.PaymentPlan.IntervalsProcessed.Int64()),
+			CancelledAt:        time.Now(),
+			Alive:              false,
+		},
+	}
+	if err := inserter.Put(ctx, items); err != nil {
+		return err
+	}
+	return nil
+}
+
+type TransferBQ struct {
+	From   string    `bigquery:"From"`
+	To     string    `bigquery:"To"`
+	Amount float64   `bigquery:"Amount"`
+	TS     time.Time `bigquery:"TS"`
+}
+
+func insertRowsBQtransfer(ctx context.Context, projectID, datasetID, tableID string, clientBQ *bigquery.Client, log LogTransfer) error {
+
+	inserter := clientBQ.Dataset(datasetID).Table(tableID).Inserter()
+	items := []*TransferBQ{
+
+		{From: string(log.From.Hex()),
+			To:     string(log.To.Hex()),
+			Amount: float64(log.Amount.Int64()),
+			TS:     time.Now()},
+	}
+	if err := inserter.Put(ctx, items); err != nil {
+		return err
+	}
+	return nil
+}
+
+type ContributeToTravelPlanBQ struct {
+	ID          int       `bigquery:"ID"`
+	Contributor string    `bigquery:"Contributor"`
+	Amount      float64   `bigquery:"Amount"`
+	TS          time.Time `bigquery:"TS"`
+}
+
+func insertRowsBQContributeToTravelPlan(ctx context.Context, projectID, datasetID, tableID string, clientBQ *bigquery.Client, log LogContributeToTravelPlan) error {
+
+	inserter := clientBQ.Dataset(datasetID).Table(tableID).Inserter()
+	items := []*ContributeToTravelPlanBQ{
+
+		{ID: int(log.ID.Int64()),
+			Contributor: string(log.Contributor.Hex()),
+			Amount:      float64(log.Amount.Int64()),
+			TS:          time.Now()},
+	}
+	if err := inserter.Put(ctx, items); err != nil {
+		return err
+	}
+	return nil
+}
+
 func PrintEvents() {
 
 	ctx := context.Background()
@@ -154,8 +240,10 @@ func PrintEvents() {
 	datasetID := "LogsEVM"
 
 	tablePaymentPlanCeloCUSD := "PaymentPlanCeloCUSD"
-	tableTravelPlanCeloCUSD := "flywallet-web.LogsEVM.TravelPlanCeloCUSD"
-
+	tableTravelPlanCeloCUSD := "TravelPlanCeloCUSD"
+	tableTransferCeloUSD := "TransferCeloUSD"
+	tableTravelPlanContributionsCeloUSD := "TravelPlanContributionsCeloUSD"
+	// clientBQ, err := bigquery.NewClient(ctx, projectID, option.WithCredentialsFile("/home/karolsudol/keys/flywallet-web-caab21f0d273.json"))
 	clientBQ, err := bigquery.NewClient(ctx, projectID)
 	if err != nil {
 		log.Fatalf("bigquery.NewClient: %v", err)
@@ -221,15 +309,12 @@ func PrintEvents() {
 				if err != nil {
 					log.Fatal(err)
 				}
-				// createdPaymentPlanEvent.ID = vLog.Topics[1].String()
-
-				// createdPaymentPlanEvent.Owner = common.HexToAddress(vLog.Topics[2].Hex())
 
 				prettyPrint(createdPaymentPlanEvent)
 
-				err = insertRowsBQpaymentPlan(ctx, projectID, datasetID, tablePaymentPlanCeloCUSD, clientBQ, createdPaymentPlanEvent)
+				err = insertRowsBQpaymentPlanStart(ctx, projectID, datasetID, tablePaymentPlanCeloCUSD, clientBQ, createdPaymentPlanEvent)
 				if err != nil {
-					log.Printf("Failed to insert BQ PaymentPlan: %v", err)
+					log.Printf("Failed to insert BQ PaymentPlanStart: %v", err)
 				}
 
 			case logCreatedTravelPlanSigHash.Hex():
@@ -262,7 +347,15 @@ func PrintEvents() {
 				if err != nil {
 					log.Fatal(err)
 				}
+
+				contributeToTravelPlanEvent.ID = vLog.Topics[1].Big()
+				contributeToTravelPlanEvent.Contributor = common.HexToAddress(vLog.Topics[2].Hex())
 				prettyPrint(contributeToTravelPlanEvent)
+
+				err = insertRowsBQContributeToTravelPlan(ctx, projectID, datasetID, tableTravelPlanContributionsCeloUSD, clientBQ, contributeToTravelPlanEvent)
+				if err != nil {
+					log.Printf("Failed to insert BQ tableTravelPlanContributionsCeloUSD: %v", err)
+				}
 
 			case logClaimTravelPlanSigHash.Hex():
 				fmt.Printf("Log Name: ClaimTravelPlan\n")
@@ -271,7 +364,12 @@ func PrintEvents() {
 				if err != nil {
 					log.Fatal(err)
 				}
+				claimTravelPlanEvent.ID = vLog.Topics[1].Big()
 				prettyPrint(claimTravelPlanEvent)
+				err = insertRowsBQtravelPlanClaim(ctx, projectID, datasetID, tableTravelPlanCeloCUSD, clientBQ, claimTravelPlanEvent)
+				if err != nil {
+					log.Printf("Failed to insert BQ TravelPlanClaim: %v", err)
+				}
 
 			case logTransferSigHash.Hex():
 				fmt.Printf("Log Name: Transfer\n")
@@ -280,7 +378,15 @@ func PrintEvents() {
 				if err != nil {
 					log.Fatal(err)
 				}
+				transferEvent.From = common.HexToAddress(vLog.Topics[1].Hex())
+				transferEvent.To = common.HexToAddress(vLog.Topics[2].Hex())
+
 				prettyPrint(transferEvent)
+
+				err = insertRowsBQtransfer(ctx, projectID, datasetID, tableTransferCeloUSD, clientBQ, transferEvent)
+				if err != nil {
+					log.Printf("Failed to insert BQ tableTransferCeloUSD: %v", err)
+				}
 
 			case logCancelPaymentPlanSigHash.Hex():
 				fmt.Printf("Log Name: CancelPaymentPlan\n")
@@ -308,6 +414,10 @@ func PrintEvents() {
 					log.Fatal(err)
 				}
 				prettyPrint(endPaymentPlanEvent)
+				err = insertRowsBQpaymentPlanEnd(ctx, projectID, datasetID, tablePaymentPlanCeloCUSD, clientBQ, endPaymentPlanEvent)
+				if err != nil {
+					log.Printf("Failed to insert BQ PaymentPlanEnd: %v", err)
+				}
 			}
 
 		}
