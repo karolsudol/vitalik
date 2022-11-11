@@ -2,10 +2,8 @@ package travelsaver
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
-	"math/big"
 	"strings"
 	"time"
 
@@ -17,66 +15,6 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
-
-func prettyPrint(d ...interface{}) {
-	b, err := json.MarshalIndent(d, "", "  ")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(string(b))
-}
-
-type LogCreatedPaymentPlan struct {
-	ID          *big.Int
-	Owner       common.Address
-	PaymentPlan TravelSaverPaymentPlan
-}
-
-type LogCreatedTravelPlan struct {
-	ID         *big.Int
-	Owner      common.Address
-	TravelPlan TravelSaverTravelPlan
-}
-
-type LogStartPaymentPlanInterval struct {
-	ID         *big.Int
-	CallableOn *big.Int
-	Amount     *big.Int
-	IntervalNo *big.Int
-}
-
-type LogContributeToTravelPlan struct {
-	ID          *big.Int
-	Contributor common.Address
-	Amount      *big.Int
-}
-
-type LogClaimTravelPlan struct {
-	ID *big.Int
-}
-
-type LogTransfer struct {
-	From   common.Address
-	To     common.Address
-	Amount *big.Int
-}
-
-type LogCancelPaymentPlan struct {
-	ID          *big.Int
-	Owner       common.Address
-	PaymentPlan TravelSaverPaymentPlan
-}
-
-type LogPaymentPlanIntervalEnded struct {
-	ID         *big.Int
-	IntervalNo *big.Int
-}
-
-type LogEndPaymentPlan struct {
-	ID          *big.Int
-	Owner       common.Address
-	PaymentPlan TravelSaverPaymentPlan
-}
 
 type TravelPlanBQ struct {
 	ID                int       `bigquery:"ID"`
@@ -192,9 +130,10 @@ type TransferBQ struct {
 	To     string    `bigquery:"To"`
 	Amount float64   `bigquery:"Amount"`
 	TS     time.Time `bigquery:"TS"`
+	TX     string    `bigquery:"TX"`
 }
 
-func insertRowsBQtransfer(ctx context.Context, projectID, datasetID, tableID string, clientBQ *bigquery.Client, log LogTransfer) error {
+func insertRowsBQtransfer(ctx context.Context, projectID, datasetID, tableID string, clientBQ *bigquery.Client, log LogTransfer, tx string) error {
 
 	inserter := clientBQ.Dataset(datasetID).Table(tableID).Inserter()
 	items := []*TransferBQ{
@@ -202,7 +141,8 @@ func insertRowsBQtransfer(ctx context.Context, projectID, datasetID, tableID str
 		{From: string(log.From.Hex()),
 			To:     string(log.To.Hex()),
 			Amount: float64(log.Amount.Int64()),
-			TS:     time.Now()},
+			TS:     time.Now(),
+			TX:     tx},
 	}
 	if err := inserter.Put(ctx, items); err != nil {
 		return err
@@ -233,39 +173,74 @@ func insertRowsBQContributeToTravelPlan(ctx context.Context, projectID, datasetI
 	return nil
 }
 
+type PaymentPlanIntervalEndedEventBQ struct {
+	ID         int       `bigquery:"ID"`
+	IntervalNo int       `bigquery:"IntervalNo"`
+	TS         time.Time `bigquery:"TS"`
+}
+
+func insertRowsBQPaymentPlanIntervalEnded(ctx context.Context, projectID, datasetID, tableID string, clientBQ *bigquery.Client, log LogPaymentPlanIntervalEnded) error {
+
+	inserter := clientBQ.Dataset(datasetID).Table(tableID).Inserter()
+	items := []*PaymentPlanIntervalEndedEventBQ{
+
+		{ID: int(log.ID.Int64()),
+			IntervalNo: int(log.IntervalNo.Int64()),
+			TS:         time.Now()},
+	}
+	if err := inserter.Put(ctx, items); err != nil {
+		return err
+	}
+	return nil
+}
+
 func PrintEvents() {
 
 	ctx := context.Background()
 	projectID := "flywallet-web"
 	datasetID := "LogsEVM"
 
-	tablePaymentPlanCeloCUSD := "PaymentPlanCeloCUSD"
+	ws := "wss://alfajores-forno.celo-testnet.org/ws"
+	// conn := "https://alfajores-forno.celo-testnet.org"
+	contractAddressStr := "0xa883d9C6F7FC4baB52AcD2E42E51c4c528d7F7D3"
+
+	tablePaymentPlanCeloCUSD := "PaymentPlan_CELO_CUSD_TEST"
 	tableTravelPlanCeloCUSD := "TravelPlanCeloCUSD"
-	tableTransferCeloUSD := "TransferCeloUSD"
+
 	tableTravelPlanContributionsCeloUSD := "TravelPlanContributionsCeloUSD"
-	// clientBQ, err := bigquery.NewClient(ctx, projectID, option.WithCredentialsFile("/home/karolsudol/keys/flywallet-web-caab21f0d273.json"))
+
+	tableTransfer := "Transfer_CELO_CUSD_TEST"
+	tablePaymentPlanIntervalEnded := "PaymentPlanIntervalEnded_CELO_CUSD_TEST"
+
 	clientBQ, err := bigquery.NewClient(ctx, projectID)
 	if err != nil {
 		log.Fatalf("bigquery.NewClient: %v", err)
 	}
 	defer clientBQ.Close()
 
-	// datasetBQ := clientBQ.Dataset(datasetID)
-	// tableBQpaymentPlanCeloCUSD := datasetBQ.Table(tablePaymentPlanCeloCUSD)
-	// tableBQtravelPlanCeloCUSD := datasetBQ.Table(tableTravelPlanCeloCUSD)
-
-	client, err := ethclient.Dial("wss://alfajores-forno.celo-testnet.org/ws")
+	clientWS, err := ethclient.Dial(ws)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("ethclient.Dial ws: %v, %v", ws, err)
 	}
 
-	contractAddress := common.HexToAddress("0xa883d9C6F7FC4baB52AcD2E42E51c4c528d7F7D3")
+	// clientETH, err := ethclient.Dial(conn)
+	// if err != nil {
+	// 	log.Fatalf("ethclient.Dial socket: %v, %v", conn, err)
+	// }
+
+	contractAddress := common.HexToAddress(contractAddressStr)
+
+	// instance, err := token.NewToken(tokenAddress, client)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
 	query := ethereum.FilterQuery{
 		Addresses: []common.Address{contractAddress},
 	}
 
 	logs := make(chan types.Log)
-	sub, err := client.SubscribeFilterLogs(context.Background(), query, logs)
+	sub, err := clientWS.SubscribeFilterLogs(ctx, query, logs)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -338,6 +313,10 @@ func PrintEvents() {
 				if err != nil {
 					log.Fatal(err)
 				}
+				startPaymentPlanIntervalEvent.ID = vLog.Topics[1].Big()
+				startPaymentPlanIntervalEvent.CallableOn = vLog.Topics[2].Big()
+				startPaymentPlanIntervalEvent.Amount = vLog.Topics[3].Big()
+
 				prettyPrint(startPaymentPlanIntervalEvent)
 
 			case logContributeToTravelPlanSigHash.Hex():
@@ -362,9 +341,16 @@ func PrintEvents() {
 				var claimTravelPlanEvent LogClaimTravelPlan
 				err := contractAbi.UnpackIntoInterface(&claimTravelPlanEvent, "ClaimTravelPlan", vLog.Data)
 				if err != nil {
-					log.Fatal(err)
+					log.Printf("Failed to insert BQ tableTravelPlanContributionsCeloUSD: %v", err)
 				}
 				claimTravelPlanEvent.ID = vLog.Topics[1].Big()
+
+				// clientHTTPS, err := ethclient.Dial("https://cloudflare-eth.com")
+				// if err != nil {
+				// 	log.Fatal(err)
+				// }
+				// tokenAddress := common.HexToAddress("0xa74476443119A942dE498590Fe1f2454d7D4aC0d")
+
 				prettyPrint(claimTravelPlanEvent)
 				err = insertRowsBQtravelPlanClaim(ctx, projectID, datasetID, tableTravelPlanCeloCUSD, clientBQ, claimTravelPlanEvent)
 				if err != nil {
@@ -380,12 +366,13 @@ func PrintEvents() {
 				}
 				transferEvent.From = common.HexToAddress(vLog.Topics[1].Hex())
 				transferEvent.To = common.HexToAddress(vLog.Topics[2].Hex())
+				tx := vLog.TxHash.Hex()
 
 				prettyPrint(transferEvent)
 
-				err = insertRowsBQtransfer(ctx, projectID, datasetID, tableTransferCeloUSD, clientBQ, transferEvent)
+				err = insertRowsBQtransfer(ctx, projectID, datasetID, tableTransfer, clientBQ, transferEvent, tx)
 				if err != nil {
-					log.Printf("Failed to insert BQ tableTransferCeloUSD: %v", err)
+					log.Printf("Failed to insert BQ tableTransfer: %v", err)
 				}
 
 			case logCancelPaymentPlanSigHash.Hex():
@@ -404,6 +391,15 @@ func PrintEvents() {
 				if err != nil {
 					log.Fatal(err)
 				}
+
+				paymentPlanIntervalEndedEvent.ID = vLog.Topics[1].Big()
+				paymentPlanIntervalEndedEvent.IntervalNo = vLog.Topics[2].Big()
+
+				err = insertRowsBQPaymentPlanIntervalEnded(ctx, projectID, datasetID, tablePaymentPlanIntervalEnded, clientBQ, paymentPlanIntervalEndedEvent)
+				if err != nil {
+					log.Printf("Failed to insert BQ paymentPlanIntervalEnded: %v", err)
+				}
+
 				prettyPrint(paymentPlanIntervalEndedEvent)
 
 			case logEndPaymentPlanSigHash.Hex():
