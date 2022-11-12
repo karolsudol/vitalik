@@ -11,7 +11,12 @@ type BQ struct {
 }
 
 type Tables struct {
-	PaymentPlan string
+	PaymentPlan              string
+	TravelPlan               string
+	StartPaymentPlanInterval string
+	PaymentPlanIntervalEnded string
+	ContributeToTravelPlan   string
+	Transfer                 string
 }
 
 type paymentPlanBQ struct {
@@ -27,4 +32,43 @@ type paymentPlanBQ struct {
 	Alive              bool      `bigquery:"Alive"`
 	CreatedAt          time.Time `bigquery:"CreatedAt"`
 	CancelledAt        time.Time `bigquery:"CancelledAt"`
+}
+
+type travelPlanBQ struct {
+	ID                int       `bigquery:"ID"`
+	Owner             string    `bigquery:"Owner"`
+	OperatorPlanID    int       `bigquery:"OperatorPlanID"`
+	OperatorUserID    int       `bigquery:"OperatorUserID"`
+	ContributedAmount float64   `bigquery:"ContributedAmount"`
+	CreatedAt         time.Time `bigquery:"CreatedAt"`
+	ClaimedAt         time.Time `bigquery:"ClaimedAt"`
+	Claimed           bool      `bigquery:"Claimed"`
+}
+
+type startPaymentPlanIntervalBQ struct {
+	ID         int       `bigquery:"ID"`
+	CallableOn time.Time `bigquery:"CallableOn"`
+	Amount     int       `bigquery:"Amount"`
+	IntervalNo int       `bigquery:"IntervalNo"`
+}
+
+type paymentPlanIntervalEndedBQ struct {
+	ID         int       `bigquery:"ID"`
+	IntervalNo int       `bigquery:"IntervalNo"`
+	TS         time.Time `bigquery:"TS"`
+}
+
+type contributeToTravelPlanBQ struct {
+	ID          int       `bigquery:"ID"`
+	Contributor string    `bigquery:"Contributor"`
+	Amount      float64   `bigquery:"Amount"`
+	TS          time.Time `bigquery:"TS"`
+}
+
+type transferBQ struct {
+	From   string    `bigquery:"From"`
+	To     string    `bigquery:"To"`
+	Amount float64   `bigquery:"Amount"`
+	TS     time.Time `bigquery:"TS"`
+	TX     string    `bigquery:"TX"`
 }
