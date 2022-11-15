@@ -1,5 +1,12 @@
 # VITALIK
 
+<br/>
+<p align="center">
+<img src="img/vitalik.png">
+</a>
+</p>
+<br/>
+
 `Geth` based project that listens to `real time events` from below smart contract and executes:
 
 1. `BQ` insterts upon received events
@@ -26,15 +33,6 @@
 ## run:
 
 - `go run cmd/main.go`
-
-## who is this guy
-
-<br/>
-<p align="center">
-<img src="img/vitalik.png">
-</a>
-</p>
-<br/>
 
 ## TBD
 
