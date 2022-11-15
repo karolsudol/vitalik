@@ -27,7 +27,7 @@
 
 - `go run cmd/main.go`
 
-## coverage
+## who is this guy
 
 <br/>
 <p align="center">
