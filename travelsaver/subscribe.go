@@ -95,6 +95,13 @@ func (r *ReadWriter) Subscribe() error {
 					return fmt.Errorf("StartPaymentPlanInterval BQ instert err: %v", err)
 				}
 
+				ID := int(startPaymentPlanIntervalEvent.ID.Int64())
+				TS := int(startPaymentPlanIntervalEvent.CallableOn.Int64())
+				err = r.publishIntervals(ID, TS)
+				if err != nil {
+					return fmt.Errorf("publishIntervals PUB/SUB instert err: %v", err)
+				}
+
 			case l.logContributeToTravelPlanSigHash.Hex():
 				fmt.Printf("Log Name: ContributeToTravelPlan\n")
 				var contributeToTravelPlanEvent LogContributeToTravelPlan
