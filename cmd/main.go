@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/flywallet-io/evm-events-consumer/travelsaver"
 )
@@ -43,6 +44,13 @@ func main() {
 		BQ:              bq,
 	}
 
-	rw.Subscribe()
+	err := rw.New()
+	if err != nil {
+		log.Println(err)
+	}
 
+	err = rw.Subscribe()
+	if err != nil {
+		log.Println(err)
+	}
 }

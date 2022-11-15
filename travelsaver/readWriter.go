@@ -2,15 +2,18 @@ package travelsaver
 
 import (
 	"context"
+	"crypto/ecdsa"
+	"encoding/binary"
 	"fmt"
-	"strings"
+	"log"
+	"math/big"
+	"os"
 
-	"cloud.google.com/go/bigquery"
-	ethereum "github.com/ethereum/go-ethereum"
-	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/joho/godotenv"
 )
 
 type ReadWriter struct {
@@ -18,204 +21,230 @@ type ReadWriter struct {
 	HTTPS           string
 	ContractAddress string
 	BQ              BQ
+	instanceAddress common.Address
+	// clinet          ethclient.Client
+	auth *bind.TransactOpts
 }
 
-func (r *ReadWriter) Subscribe() error {
-	ctx := context.Background()
-
-	reader := reader{
-		HTTPS:           r.HTTPS,
-		contractAddress: r.ContractAddress,
-	}
-	err := reader.new()
+func (r ReadWriter) New() error {
+	err := godotenv.Load(".env")
 	if err != nil {
-		return fmt.Errorf("smart contract new reader err: %v", err)
+		return fmt.Errorf("load env key err: %v", err)
 	}
 
-	clientBQ, err := bigquery.NewClient(ctx, r.BQ.ProjectID)
+	key := os.Getenv("PRIVATE_KEY")
+
+	client, err := ethclient.Dial(r.HTTPS)
 	if err != nil {
-		return fmt.Errorf("bigquery new client err: %v", err)
+		return fmt.Errorf("ethClient HTTPS dial err: %v", err)
 	}
-
-	contractAddress := common.HexToAddress(r.ContractAddress)
-
-	clientWSS, err := ethclient.Dial(r.WSS)
+	// r.clinet = *client
+	privateKey, err := crypto.HexToECDSA(key)
 	if err != nil {
-		return fmt.Errorf("eth new client dial err: %v", err)
+		return fmt.Errorf("private key ECDSA err: %v", err)
 	}
 
-	query := ethereum.FilterQuery{
-		Addresses: []common.Address{contractAddress},
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return fmt.Errorf("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
+
 	}
-	logs := make(chan types.Log)
-	sub, err := clientWSS.SubscribeFilterLogs(ctx, query, logs)
+
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
-		return fmt.Errorf("eth  wss client SubscribeFilterLogs err: %v", err)
+		return fmt.Errorf("PendingNonceAt err: %v", err)
 	}
 
-	contractAbi, err := abi.JSON(strings.NewReader(string(TravelSaverABI)))
+	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
-		return fmt.Errorf("contract's abi json err: %v", err)
+		return fmt.Errorf("SuggestGasPrice err: %v", err)
+
 	}
 
-	l := newLogSigHash()
+	auth := bind.NewKeyedTransactor(privateKey)
+	auth.Nonce = big.NewInt(int64(nonce))
+	auth.Value = big.NewInt(0)     // in wei
+	auth.GasLimit = uint64(300000) // in units
+	auth.GasPrice = gasPrice
 
-	for {
-		select {
-		case err := <-sub.Err():
-			return fmt.Errorf("sub log err: %v", err)
-		case vLog := <-logs:
+	r.auth = auth
 
-			switch vLog.Topics[0].Hex() {
-			case l.logCreatedPaymentPlanSigHash.Hex():
-				fmt.Printf("Log Name: CreatedPaymentPlan\n")
-				var createdPaymentPlanEvent LogCreatedPaymentPlan
-				err := contractAbi.UnpackIntoInterface(&createdPaymentPlanEvent, "CreatedPaymentPlan", vLog.Data)
-				if err != nil {
-					return fmt.Errorf("CreatedPaymentPlan log abi unpack err: %v", err)
-				}
+	r.instanceAddress = common.HexToAddress(r.ContractAddress)
 
-				prettyPrint(createdPaymentPlanEvent)
-				err = createdPaymentPlanEvent.instert(&r.BQ, clientBQ, ctx)
-				if err != nil {
-					return fmt.Errorf("CreatedPaymentPlan BQ instert err: %v", err)
-				}
-
-			case l.logCreatedTravelPlanSigHash.Hex():
-				fmt.Printf("Log Name: CreatedTravelPlan\n")
-				var createdTravelPlanEvent LogCreatedTravelPlan
-				err := contractAbi.UnpackIntoInterface(&createdTravelPlanEvent, "CreatedTravelPlan", vLog.Data)
-				if err != nil {
-					return fmt.Errorf("CreatedTravelPlan log abi unpack err: %v", err)
-				}
-				prettyPrint(createdTravelPlanEvent)
-				err = createdTravelPlanEvent.instert(&r.BQ, clientBQ, ctx)
-				if err != nil {
-					return fmt.Errorf("CreatedTravelPlan BQ instert err: %v", err)
-				}
-
-			case l.logStartPaymentPlanIntervalSigHash.Hex():
-				fmt.Printf("Log Name: StartPaymentPlanInterval\n")
-				var startPaymentPlanIntervalEvent LogStartPaymentPlanInterval
-				err := contractAbi.UnpackIntoInterface(&startPaymentPlanIntervalEvent, "StartPaymentPlanInterval", vLog.Data)
-				if err != nil {
-					return fmt.Errorf("StartPaymentPlanInterval log abi unpack err: %v", err)
-				}
-				startPaymentPlanIntervalEvent.ID = vLog.Topics[1].Big()
-				startPaymentPlanIntervalEvent.CallableOn = vLog.Topics[2].Big()
-				startPaymentPlanIntervalEvent.Amount = vLog.Topics[3].Big()
-
-				prettyPrint(startPaymentPlanIntervalEvent)
-				err = startPaymentPlanIntervalEvent.instert(&r.BQ, clientBQ, ctx)
-				if err != nil {
-					return fmt.Errorf("StartPaymentPlanInterval BQ instert err: %v", err)
-				}
-
-			case l.logContributeToTravelPlanSigHash.Hex():
-				fmt.Printf("Log Name: ContributeToTravelPlan\n")
-				var contributeToTravelPlanEvent LogContributeToTravelPlan
-				err := contractAbi.UnpackIntoInterface(&contributeToTravelPlanEvent, "ContributeToTravelPlan", vLog.Data)
-				if err != nil {
-					return fmt.Errorf("ContributeToTravelPlan log abi unpack err: %v", err)
-				}
-
-				contributeToTravelPlanEvent.ID = vLog.Topics[1].Big()
-				contributeToTravelPlanEvent.Contributor = common.HexToAddress(vLog.Topics[2].Hex())
-
-				prettyPrint(contributeToTravelPlanEvent)
-
-				err = contributeToTravelPlanEvent.instert(&r.BQ, clientBQ, ctx)
-				if err != nil {
-					return fmt.Errorf("ContributeToTravelPlan BQ instert err: %v", err)
-				}
-
-			case l.logClaimTravelPlanSigHash.Hex():
-				fmt.Printf("Log Name: ClaimTravelPlan\n")
-				var claimTravelPlanEvent LogClaimTravelPlan
-				err := contractAbi.UnpackIntoInterface(&claimTravelPlanEvent, "ClaimTravelPlan", vLog.Data)
-				if err != nil {
-					return fmt.Errorf("ClaimTravelPlan log abi unpack err: %v", err)
-				}
-				claimTravelPlanEvent.ID = vLog.Topics[1].Big()
-
-				var createdTravelPlanEvent LogCreatedTravelPlan
-
-				createdTravelPlanEvent.TravelPlan, err = reader.readTravelPlan(claimTravelPlanEvent.ID)
-				if err != nil {
-					return fmt.Errorf("reader readTravelPlan err: %v", err)
-				}
-
-				prettyPrint(createdTravelPlanEvent.TravelPlan)
-
-				err = createdTravelPlanEvent.instert(&r.BQ, clientBQ, ctx)
-				if err != nil {
-					return fmt.Errorf("ClaimTravelPlan BQ instert err: %v", err)
-				}
-
-			case l.logTransferSigHash.Hex():
-				fmt.Printf("Log Name: Transfer\n")
-				var transferEvent LogTransfer
-				err := contractAbi.UnpackIntoInterface(&transferEvent, "Transfer", vLog.Data)
-				if err != nil {
-					return fmt.Errorf("Transfer log abi unpack err: %v", err)
-				}
-				transferEvent.From = common.HexToAddress(vLog.Topics[1].Hex())
-				transferEvent.To = common.HexToAddress(vLog.Topics[2].Hex())
-				tx := vLog.TxHash.Hex()
-
-				prettyPrint(transferEvent)
-
-				err = transferEvent.instert(&r.BQ, clientBQ, ctx, tx)
-				if err != nil {
-					return fmt.Errorf("Transfer BQ instert err: %v", err)
-				}
-
-			case l.logCancelPaymentPlanSigHash.Hex():
-				fmt.Printf("Log Name: CancelPaymentPlan\n")
-				var cancelPaymentPlanEvent LogCancelPaymentPlan
-				err := contractAbi.UnpackIntoInterface(&cancelPaymentPlanEvent, "CancelPaymentPlan", vLog.Data)
-				if err != nil {
-					return fmt.Errorf("CancelPaymentPlan log abi unpack err: %v", err)
-				}
-				prettyPrint(cancelPaymentPlanEvent)
-
-				err = cancelPaymentPlanEvent.instert(&r.BQ, clientBQ, ctx)
-				if err != nil {
-					return fmt.Errorf("CancelPaymentPlan BQ instert err: %v", err)
-				}
-
-			case l.logPaymentPlanIntervalEndedSigHash.Hex():
-				fmt.Printf("Log Name: PaymentPlanIntervalEnded\n")
-				var paymentPlanIntervalEndedEvent LogPaymentPlanIntervalEnded
-				err := contractAbi.UnpackIntoInterface(&paymentPlanIntervalEndedEvent, "PaymentPlanIntervalEnded", vLog.Data)
-				if err != nil {
-					return fmt.Errorf("PaymentPlanIntervalEnded log abi unpack err: %v", err)
-				}
-
-				paymentPlanIntervalEndedEvent.ID = vLog.Topics[1].Big()
-				paymentPlanIntervalEndedEvent.IntervalNo = vLog.Topics[2].Big()
-
-				prettyPrint(paymentPlanIntervalEndedEvent)
-				err = paymentPlanIntervalEndedEvent.instert(&r.BQ, clientBQ, ctx)
-				if err != nil {
-					return fmt.Errorf("PaymentPlanIntervalEnded BQ instert err: %v", err)
-				}
-
-			case l.logEndPaymentPlanSigHash.Hex():
-				fmt.Printf("Log Name: EndPaymentPlan\n")
-				var endPaymentPlanEvent LogEndPaymentPlan
-				err := contractAbi.UnpackIntoInterface(&endPaymentPlanEvent, "EndPaymentPlan", vLog.Data)
-				if err != nil {
-					return fmt.Errorf("EndPaymentPlan log abi unpack err: %v", err)
-				}
-				prettyPrint(endPaymentPlanEvent)
-				err = endPaymentPlanEvent.instert(&r.BQ, clientBQ, ctx)
-				if err != nil {
-					return fmt.Errorf("EndPaymentPlan BQ instert err: %v", err)
-				}
-			}
-
-		}
-	}
+	return nil
 
 }
+
+func (r ReadWriter) readTravelPlan1(ID *big.Int) (TravelSaverTravelPlan, error) {
+	client, err := ethclient.Dial(r.HTTPS)
+	if err != nil {
+		log.Fatalf("ethClient HTTPS dial err: %v", err)
+	}
+	var object TravelSaverTravelPlan
+	instance, err := NewTravelSaver(r.instanceAddress, client)
+	if err != nil {
+		return object, fmt.Errorf("instance of new TravelSaver contract err: %v", err)
+
+	}
+
+	object, err = instance.GetTravelPlanDetails(&bind.CallOpts{}, ID)
+	if err != nil {
+		return object, fmt.Errorf("instance of TravelSaver GetTravelPlanDetails err: %v", err)
+	}
+	return object, nil
+}
+
+func (r ReadWriter) writeCreateTravelPaymentPlan(operatorPlanID, operatorUserID, amountPerInterval, totalIntervals, intervalLength *big.Int) error {
+	client, err := ethclient.Dial(r.HTTPS)
+	if err != nil {
+		log.Fatalf("ethClient HTTPS dial err: %v", err)
+	}
+	instance, err := NewTravelSaver(r.instanceAddress, client)
+	if err != nil {
+		return fmt.Errorf("new instance of NewTravelSaver err: %v", err)
+	}
+
+	// operatorPlanID_ := big.NewInt(operatorPlanID)
+	// operatorUserID_ := big.NewInt(2)
+	// amountPerInterval := big.NewInt(1)
+	// totalIntervals := big.NewInt(3)
+	// intervalLength := big.NewInt(10)
+
+	tx, err := instance.CreateTravelPaymentPlan(r.auth, operatorPlanID, operatorUserID, amountPerInterval, totalIntervals, intervalLength)
+	if err != nil {
+		return fmt.Errorf("instance CreateTravelPaymentPlan err: %v", err)
+	}
+
+	fmt.Printf("tx sent: %s\n", tx.Hash().Hex())
+	fmt.Println(binary.BigEndian.Uint64(tx.Data()))
+	tx.Value()
+
+	return nil
+
+}
+
+func (r ReadWriter) readTravelPlan(ID *big.Int) (TravelSaverTravelPlan, error) {
+
+	var o TravelSaverTravelPlan
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		return o, fmt.Errorf("load env key err: %v", err)
+	}
+
+	key := os.Getenv("PRIVATE_KEY")
+
+	client, err := ethclient.Dial(r.HTTPS)
+	if err != nil {
+		return o, fmt.Errorf("ethClient HTTPS dial err: %v", err)
+
+	}
+	privateKey, err := crypto.HexToECDSA(key)
+	if err != nil {
+		return o, fmt.Errorf("crypto.HexToECDSA err: %v", err)
+	}
+
+	publicKey := privateKey.Public()
+	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+	if !ok {
+		return o, fmt.Errorf("crypto.HexToECDSA err: %s", "cannot assert type: publicKey is not of type *ecdsa.PublicKey")
+
+	}
+
+	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	if err != nil {
+		return o, fmt.Errorf("nonce err: %v", err)
+	}
+
+	gasPrice, err := client.SuggestGasPrice(context.Background())
+	if err != nil {
+		return o, fmt.Errorf("gasPrice err: %v", err)
+	}
+
+	auth := bind.NewKeyedTransactor(privateKey)
+	auth.Nonce = big.NewInt(int64(nonce))
+	auth.Value = big.NewInt(0)     // in wei
+	auth.GasLimit = uint64(300000) // in units
+	auth.GasPrice = gasPrice
+
+	address := common.HexToAddress(r.ContractAddress)
+
+	instance, err := NewTravelSaver(address, client)
+	if err != nil {
+		return o, fmt.Errorf("instance contract err: %v", err)
+	}
+
+	object, err := instance.GetTravelPlanDetails(&bind.CallOpts{}, ID)
+	if err != nil {
+		return o, fmt.Errorf("object GetTravelPlanDetails err: %v", err)
+	}
+
+	// fmt.Println("GetTravelPlanDetails:")
+	// prettyPrint(object)
+	return object, nil
+}
+
+// func Write()  {
+
+// 	client, err := ethclient.Dial("https://alfajores-forno.celo-testnet.org")
+// 	if err != nil {
+// 	log.Fatal(err)
+// 	}
+
+// 	privateKey, err := crypto.HexToECDSA("42497423a6d4c1542322c024b9711a35cd9e29b11adab83bd5e5ff28f468194e")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	publicKey := privateKey.Public()
+// 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
+// 	if !ok {
+// 		log.Fatal("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
+// 	}
+
+// 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
+// 	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	gasPrice, err := client.SuggestGasPrice(context.Background())
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	auth := bind.NewKeyedTransactor(privateKey)
+// 	auth.Nonce = big.NewInt(int64(nonce))
+// 	auth.Value = big.NewInt(0)     // in wei
+// 	auth.GasLimit = uint64(300000) // in units
+// 	auth.GasPrice = gasPrice
+
+// 	address := common.HexToAddress("0xa883d9C6F7FC4baB52AcD2E42E51c4c528d7F7D3")
+// 	instance, err := NewTravelSaver(address, client)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	operatorPlanID_ := big.NewInt(2)
+// 	operatorUserID_ := big.NewInt(2)
+// 	amountPerInterval := big.NewInt(1)
+// 	totalIntervals := big.NewInt(3)
+// 	intervalLength := big.NewInt(10)
+// 	// copy(operatorPlanID_[:], []byte(1))
+// 	// copy(value[:], []byte("bar"))
+// 	// copy(key[:], []byte("foo"))
+// 	// copy(value[:], []byte("bar"))
+
+// 	tx, err := instance.CreateTravelPaymentPlan(auth, operatorPlanID_, operatorUserID_, amountPerInterval, totalIntervals, intervalLength)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	fmt.Printf("tx sent: %s\n", tx.Hash().Hex())
+// 	fmt.Println(binary.BigEndian.Uint64(tx.Data()))
+// 	tx.Value()
+
+// }
