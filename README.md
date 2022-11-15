@@ -15,7 +15,7 @@
 
 - `smart-contract` Deployed and Verified on [alfajores](https://explorer.celo.org/alfajores/address/0xa883d9C6F7FC4baB52AcD2E42E51c4c528d7F7D3/contracts)
 
-- with [owner](https://sepolia.etherscan.io/address/0x741e0608906B74B8754a99413A7374FdE7B9779a)
+- with [owner](https://explorer.celo.org/alfajores/address/0x741e0608906B74B8754a99413A7374FdE7B9779a/transactions)
 
 ## logic
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/flywallet-io/evm-events-consumer/travelsaver"
+	"github.com/karolsudol/vitalik/travelsaver"
 )
 
 func main() {

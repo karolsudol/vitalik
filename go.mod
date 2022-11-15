@@ -1,4 +1,4 @@
-module github.com/flywallet-io/evm-events-consumer
+module github.com/karolsudol/vitalik
 
 go 1.18
 
