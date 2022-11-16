@@ -21,8 +21,10 @@ func (r ReadWriter) publishIntervals(ID, TS int) error {
 	result := t.Publish(ctx, &pubsub.Message{
 		Data: []byte(r.ContractAddress),
 		Attributes: map[string]string{
-			"ID": strconv.Itoa(ID),
-			"TS": strconv.Itoa(TS),
+			"ID":       strconv.Itoa(ID),
+			"TS":       strconv.Itoa(TS),
+			"contract": r.ContractAddress,
+			"https":    r.HTTPS,
 		},
 	})
 	// Block until the result is returned and a server-generated

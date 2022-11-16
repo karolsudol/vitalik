@@ -14,51 +14,43 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type ReadWriter struct {
-	WSS             string
-	HTTPS           string
-	ContractAddress string
-	BQ              BQ
-	instanceAddress common.Address
-	SubID           string
-	auth            *bind.TransactOpts
-}
+func (r ReadWriter) readTravelPlan(ID *big.Int) (TravelSaverTravelPlan, error) {
 
-func (r *ReadWriter) New() error {
+	var o TravelSaverTravelPlan
+
 	err := godotenv.Load(".env")
 	if err != nil {
-		return fmt.Errorf("load env key err: %v", err)
+		return o, fmt.Errorf("load env key err: %v", err)
 	}
 
 	key := os.Getenv("PRIVATE_KEY")
 
 	client, err := ethclient.Dial(r.HTTPS)
 	if err != nil {
-		return fmt.Errorf("ethClient HTTPS dial err: %v", err)
+		return o, fmt.Errorf("ethClient HTTPS dial err: %v", err)
+
 	}
-	// r.clinet = *client
 	privateKey, err := crypto.HexToECDSA(key)
 	if err != nil {
-		return fmt.Errorf("private key ECDSA err: %v", err)
+		return o, fmt.Errorf("crypto.HexToECDSA err: %v", err)
 	}
 
 	publicKey := privateKey.Public()
 	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
 	if !ok {
-		return fmt.Errorf("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
+		return o, fmt.Errorf("crypto.HexToECDSA err: %s", "cannot assert type: publicKey is not of type *ecdsa.PublicKey")
 
 	}
 
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
 	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
 	if err != nil {
-		return fmt.Errorf("PendingNonceAt err: %v", err)
+		return o, fmt.Errorf("nonce err: %v", err)
 	}
 
 	gasPrice, err := client.SuggestGasPrice(context.Background())
 	if err != nil {
-		return fmt.Errorf("SuggestGasPrice err: %v", err)
-
+		return o, fmt.Errorf("gasPrice err: %v", err)
 	}
 
 	auth := bind.NewKeyedTransactor(privateKey)
@@ -67,9 +59,17 @@ func (r *ReadWriter) New() error {
 	auth.GasLimit = uint64(300000) // in units
 	auth.GasPrice = gasPrice
 
-	r.auth = auth
+	address := common.HexToAddress(r.ContractAddress)
 
-	r.instanceAddress = common.HexToAddress(r.ContractAddress)
+	instance, err := NewTravelSaver(address, client)
+	if err != nil {
+		return o, fmt.Errorf("instance contract err: %v", err)
+	}
 
-	return nil
+	object, err := instance.GetTravelPlanDetails(&bind.CallOpts{}, ID)
+	if err != nil {
+		return o, fmt.Errorf("object GetTravelPlanDetails err: %v", err)
+	}
+
+	return object, nil
 }
