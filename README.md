@@ -7,13 +7,15 @@
 </p>
 <br/>
 
-`Geth` based project that listens to `real time events` from below smart contract and executes:
+`Geth` example of `EMV` contract listener that executues upon received `real time events`:
 
-1. `BQ` insterts upon received events
-2. `reads-writes` from contract
-3. publish messages to GCPs `PUB/SUB`
+1. `BQ` insterts ie `data engineering`
+2. `reads` from contract to check logs vs contracts state vars
+3. `publish` messages to GCPs `PUB/SUB`
+4. `receives` messages from GCPs `PUB/SUB`
+5. `writes` to the contracts given received params
 
-- `smart-contract` Deployed and Verified on [alfajores](https://explorer.celo.org/alfajores/address/0xa883d9C6F7FC4baB52AcD2E42E51c4c528d7F7D3/contracts)
+- `smart-contract` example is deployed and verified on [alfajores](https://explorer.celo.org/alfajores/address/0xa883d9C6F7FC4baB52AcD2E42E51c4c528d7F7D3/contracts)
 
 - with [owner](https://explorer.celo.org/alfajores/address/0x741e0608906B74B8754a99413A7374FdE7B9779a/transactions)
 
@@ -26,13 +28,14 @@
 ## dependencies:
 
 - `PRIVATE_KEY="xxx"` in .env
-- `GCP.json` in global with rights to read/write to PUB/SUB and BQ
+- `GCP_worker.json` in global with rights to read/write to PUB/SUB and BQ
 - `BQ-TABLES` as per schema
-- `intervals` as pub/sub topic
+- `intervals-sub` as pub/sub topic
 
 ## run:
 
-- `go run cmd/main.go`
+- logs listener, contract reader ,bq inserter and pubsub publisher`go run cmd/sub/main.go`
+- pubsub listerner and contaract writer`go run cmd/pub/main.go`
 
 ## TBD
 
