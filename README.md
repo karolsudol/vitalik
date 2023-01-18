@@ -15,11 +15,15 @@
 4. `receives` messages from GCPs `PUB/SUB`
 5. `writes` to the contracts given received params
 
-- `smart-contract` example is deployed and verified on [mumbai](https://mumbai.polygonscan.com/address/0x54713127daf2bFD5129C980Ea800E3fCD616B547#code)
+## `smart-contract` abi example is deployed and verified on:
 
-[polygon-mainnet](https://polygonscan.com/address/0x6Bd249181BAdf2a389296D68f80A8B1c74fDDAC1#code)
-[bsc-testnet](https://testnet.bscscan.com/address/0x54713127daf2bFD5129C980Ea800E3fCD616B547#code)
-[bsc-mainnet](https://bscscan.com/address/0x6Bd249181BAdf2a389296D68f80A8B1c74fDDAC1#code)
+- [polygon-mumbai](https://mumbai.polygonscan.com/address/0x54713127daf2bFD5129C980Ea800E3fCD616B547#code)
+
+- [polygon-mainnet](https://polygonscan.com/address/0x6Bd249181BAdf2a389296D68f80A8B1c74fDDAC1#code)
+
+- [bsc-testnet](https://testnet.bscscan.com/address/0x54713127daf2bFD5129C980Ea800E3fCD616B547#code)
+
+- [bsc-mainnet](https://bscscan.com/address/0x6Bd249181BAdf2a389296D68f80A8B1c74fDDAC1#code)
 
 ## logic
 
