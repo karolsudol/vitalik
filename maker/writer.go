@@ -1,4 +1,4 @@
-package travelsaver
+package maker
 
 import (
 	"context"
@@ -16,29 +16,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func (r ReadWriter) writeCreateTravelPaymentPlan(operatorPlanID, operatorUserID, amountPerInterval, totalIntervals, intervalLength *big.Int) error {
-	client, err := ethclient.Dial(r.HTTPS)
-	if err != nil {
-		log.Fatalf("ethClient HTTPS dial err: %v", err)
-	}
-	instance, err := NewTravelSaver(r.instanceAddress, client)
-	if err != nil {
-		return fmt.Errorf("new instance of NewTravelSaver err: %v", err)
-	}
-
-	tx, err := instance.CreateTravelPaymentPlan(r.auth, operatorPlanID, operatorUserID, amountPerInterval, totalIntervals, intervalLength)
-	if err != nil {
-		return fmt.Errorf("instance CreateTravelPaymentPlan err: %v", err)
-	}
-
-	fmt.Printf("tx sent: %s\n", tx.Hash().Hex())
-	fmt.Println(binary.BigEndian.Uint64(tx.Data()))
-	tx.Value()
-
-	return nil
-}
-
-func writeCreateTravelPaymentPlan(m vitaliksMsg) error {
+func writeCreateTravelPaymentPlan(m vitaliksMsg, logger *log.Logger) error {
 
 	ctx := context.Background()
 
@@ -62,7 +40,7 @@ func writeCreateTravelPaymentPlan(m vitaliksMsg) error {
 
 	client, err := ethclient.Dial(m.HTTPS)
 	if err != nil {
-		log.Fatalf("ethClient HTTPS dial err: %v", err)
+		return fmt.Errorf("ethClient HTTPS dial err: %v", err)
 	}
 
 	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
@@ -101,8 +79,8 @@ func writeCreateTravelPaymentPlan(m vitaliksMsg) error {
 		return fmt.Errorf("instance RunInterval err: %v", err)
 	}
 
-	fmt.Printf("tx sent: %s\n", tx.Hash().Hex())
-	fmt.Println(binary.BigEndian.Uint64(tx.Data()))
+	logger.Printf("tx sent: %s\n", tx.Hash().Hex())
+	logger.Println(binary.BigEndian.Uint64(tx.Data()))
 	tx.Value()
 
 	return nil

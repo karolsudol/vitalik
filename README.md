@@ -9,15 +9,17 @@
 
 `Geth` example of `EMV` contract listener that executues upon received `real time events`:
 
-1. `BQ` insterts ie `data engineering`
+1. `BQ` data insterts from contarcts logs and read funcs
 2. `reads` from contract to check logs vs contracts state vars
 3. `publish` messages to GCPs `PUB/SUB`
 4. `receives` messages from GCPs `PUB/SUB`
 5. `writes` to the contracts given received params
 
-- `smart-contract` example is deployed and verified on [alfajores](https://explorer.celo.org/alfajores/address/0xa883d9C6F7FC4baB52AcD2E42E51c4c528d7F7D3/contracts)
+- `smart-contract` example is deployed and verified on [mumbai](https://mumbai.polygonscan.com/address/0x54713127daf2bFD5129C980Ea800E3fCD616B547#code)
 
-- with [owner](https://explorer.celo.org/alfajores/address/0x741e0608906B74B8754a99413A7374FdE7B9779a/transactions)
+[polygon-mainnet](https://polygonscan.com/address/0x6Bd249181BAdf2a389296D68f80A8B1c74fDDAC1#code)
+[bsc-testnet](https://testnet.bscscan.com/address/0x54713127daf2bFD5129C980Ea800E3fCD616B547#code)
+[bsc-mainnet](https://bscscan.com/address/0x6Bd249181BAdf2a389296D68f80A8B1c74fDDAC1#code)
 
 ## logic
 
@@ -30,17 +32,10 @@
 - `PRIVATE_KEY="xxx"` in .env
 - `GCP_worker.json` in global with rights to read/write to PUB/SUB and BQ
 - `BQ-TABLES` as per schema
-- `intervals-sub` as pub/sub topic
+- `topic-sub` as pub/sub topic
+- `gcp-project-id-sub` as pub/sub topic
 
 ## run:
 
-- logs listener, contract reader ,bq inserter and pubsub publisher`go run cmd/sub/main.go`
+- logs listener, contract reader ,bq inserter and pubsub publisher`go run cmd/sub/main.go -config=POLYGON-USDC-PROD | -config=POLYGON-USDC-TEST`
 - pubsub listerner and contaract writer`go run cmd/pub/main.go`
-
-## TBD
-
-1. UNIT TEST
-2. NETWORK TEST
-3. PB in PUB/SUB
-4. Docker/K8s deployment
-5. Detach smart contract implementation from lib

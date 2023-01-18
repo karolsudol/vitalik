@@ -17,6 +17,7 @@ type Tables struct {
 	PaymentPlanIntervalEnded string
 	ContributeToTravelPlan   string
 	Transfer                 string
+	ClaimedTravelPlan        string
 }
 
 type paymentPlanBQ struct {
@@ -43,6 +44,13 @@ type travelPlanBQ struct {
 	CreatedAt         time.Time `bigquery:"CreatedAt"`
 	ClaimedAt         time.Time `bigquery:"ClaimedAt"`
 	Claimed           bool      `bigquery:"Claimed"`
+}
+
+type claimedTravelPlanBQ struct {
+	ID     int       `bigquery:"ID"`
+	Owner  string    `bigquery:"Owner"`
+	Amount float64   `bigquery:"Amount"`
+	TS     time.Time `bigquery:"TS"`
 }
 
 type startPaymentPlanIntervalBQ struct {

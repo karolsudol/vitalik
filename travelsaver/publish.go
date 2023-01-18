@@ -33,6 +33,6 @@ func (r ReadWriter) publishIntervals(ID, TS int) error {
 	if err != nil {
 		return fmt.Errorf("Get: %v", err)
 	}
-	fmt.Printf("Published intervals message; msg ID: %v\n", id)
+	r.LogInfo.Printf("Published intervals message; msg ID: %v\n", id)
 	return nil
 }

@@ -1,4 +1,4 @@
-package travelsaver
+package maker
 
 import (
 	"context"
@@ -9,6 +9,13 @@ import (
 	"github.com/procyon-projects/chrono"
 )
 
+type vitaliksMsg struct {
+	TS    int
+	ID    int
+	ADDR  string
+	HTTPS string
+}
+
 type scheduler struct {
 	taskScheduler chrono.TaskScheduler
 }
@@ -17,23 +24,23 @@ func (s *scheduler) new() {
 	s.taskScheduler = chrono.NewDefaultTaskScheduler()
 }
 
-func (s *scheduler) createTask(msg vitaliksMsg) (chrono.ScheduledTask, error) {
+func (s *scheduler) createTask(msg vitaliksMsg, logger *log.Logger) (chrono.ScheduledTask, error) {
 
 	now := time.Now()
 
 	seconds := msg.TS - int(now.Unix())
 
-	fmt.Printf("firing in: %v secs\n", seconds)
+	logger.Printf("firing in: %v secs\n", seconds)
 
 	startTime := now.Add(time.Second * time.Duration(seconds))
 
 	task, err := s.taskScheduler.Schedule(func(ctx context.Context) {
-		log.Print("One-Shot Task Fired:")
-		prettyPrint(msg)
+		logger.Print("One-Shot Task Fired:")
+		logger.Println(msg)
 
-		err := writeCreateTravelPaymentPlan(msg)
+		err := writeCreateTravelPaymentPlan(msg, logger)
 		if err != nil {
-			log.Printf("writeCreateTravelPaymentPlan err: %v\n", err)
+			logger.Printf("writeCreateTravelPaymentPlan err: %v\n", err)
 		}
 
 	}, chrono.WithTime(startTime))

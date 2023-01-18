@@ -1,7 +1,8 @@
-package travelsaver
+package maker
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
@@ -9,36 +10,35 @@ import (
 	"cloud.google.com/go/pubsub"
 )
 
-type vitaliksMsg struct {
-	TS    int
-	ID    int
-	ADDR  string
-	HTTPS string
+type Maker struct {
+	SubID     string
+	ProjectID string
+	LogInfo   *log.Logger
 }
 
-func (r *ReadWriter) PullMsgs() error {
+func (m Maker) PullMsgs() error {
 
 	sch := scheduler{}
 	sch.new()
 
 	ctx := context.Background()
-	client, err := pubsub.NewClient(ctx, r.BQ.ProjectID)
+	client, err := pubsub.NewClient(ctx, m.ProjectID)
 	if err != nil {
 		return fmt.Errorf("pubsub.NewClient: %v", err)
 	}
 	defer client.Close()
 
-	sub := client.Subscription(r.SubID)
+	sub := client.Subscription(m.SubID)
 
 	// Receive blocks until the context is cancelled or an error occurs.
 
 	err = sub.Receive(ctx, func(_ context.Context, msg *pubsub.Message) {
-		fmt.Printf("Got message: %q\n", string(msg.Data))
+		m.LogInfo.Printf("Got message: %q\n", string(msg.Data))
 		// for key, value := range msg.Attributes {
 		// 	fmt.Printf("%s = %s\n", key, value)
 		// }
 
-		fmt.Println("vitalik unpacks:")
+		m.LogInfo.Panicln("vitalik unpacks:")
 		var mv vitaliksMsg
 
 		for key, value := range msg.Attributes {
@@ -47,14 +47,14 @@ func (r *ReadWriter) PullMsgs() error {
 			case "ID":
 				i, err := strconv.Atoi(value)
 				if err != nil {
-					fmt.Printf("strconv of ID err: %v\n", err)
+					m.LogInfo.Printf("strconv of ID err: %v\n", err)
 				}
 				mv.ID = i
 
 			case "TS":
 				t, err := strconv.Atoi(value)
 				if err != nil {
-					fmt.Printf("strconv of TS err: %v\n", err)
+					m.LogInfo.Printf("strconv of TS err: %v\n", err)
 				}
 				mv.TS = t
 			case "contract":
@@ -62,18 +62,18 @@ func (r *ReadWriter) PullMsgs() error {
 			case "https":
 				mv.HTTPS = value
 			default:
-				fmt.Printf("err fetching keys: %s = %s\n", key, value)
+				m.LogInfo.Printf("err fetching keys: %s = %s\n", key, value)
 
 			}
 		}
 
 		msg.Ack()
 
-		log.Print("received sub msg: \n")
+		m.LogInfo.Print("received sub msg: \n")
 
-		_, err := sch.createTask(mv)
+		_, err := sch.createTask(mv, m.LogInfo)
 		if err != nil {
-			fmt.Printf("createTask err: %v\n", err)
+			m.LogInfo.Printf("createTask err: %v\n", err)
 		}
 
 	})
@@ -83,3 +83,16 @@ func (r *ReadWriter) PullMsgs() error {
 
 	return nil
 }
+
+func prettyPrint(d ...interface{}) {
+	b, err := json.MarshalIndent(d, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(b))
+}
+
+// func prettyPrint(i interface{}) string {
+// 	s, _ := json.MarshalIndent(i, "", "\t")
+// 	return string(s)
+// }

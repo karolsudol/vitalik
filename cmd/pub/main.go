@@ -1,56 +1,44 @@
 package main
 
 import (
-	"fmt"
+	"context"
+	"flag"
 	"log"
 
-	"github.com/karolsudol/vitalik/travelsaver"
+	"cloud.google.com/go/logging"
+	"github.com/karolsudol/vitalik/maker"
 )
 
 func main() {
 
-	const projectID = "flywallet-web"
-	const datasetID = "LogsEVM"
-	const envirnoment = "TEST"
-	const token = "CUSD"
-	const network = "CELO"
-	const wss = "wss://alfajores-forno.celo-testnet.org/ws"
-	const https = "https://alfajores-forno.celo-testnet.org"
-	const contractAddress = "0xa883d9C6F7FC4baB52AcD2E42E51c4c528d7F7D3"
+	const projectID = "gcp-project-id"
+	const subID = "payments-prod-sub"
 
-	bq := travelsaver.BQ{
+	ctx := context.Background()
+
+	// Creates a client.
+	clientLogger, err := logging.NewClient(ctx, projectID)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	defer clientLogger.Close()
+
+	// Sets the name of the log to write to.
+	logName := subID
+
+	loggerInfo := clientLogger.Logger(logName).StandardLogger(logging.Info)
+	loggerErr := clientLogger.Logger(logName).StandardLogger(logging.Error)
+
+	flag.Parse()
+
+	maker := maker.Maker{
+		SubID:     subID,
 		ProjectID: projectID,
-		DatasetID: datasetID,
-		Tables: travelsaver.Tables{
-			PaymentPlan: fmt.Sprintf("%s_%s_%s_%s", "PaymentPlan",
-				network, token, envirnoment),
-			TravelPlan: fmt.Sprintf("%s_%s_%s_%s", "TravelPlan",
-				network, token, envirnoment),
-			StartPaymentPlanInterval: fmt.Sprintf("%s_%s_%s_%s", "StartPaymentPlanInterval",
-				network, token, envirnoment),
-			PaymentPlanIntervalEnded: fmt.Sprintf("%s_%s_%s_%s", "PaymentPlanIntervalEnded",
-				network, token, envirnoment),
-			ContributeToTravelPlan: fmt.Sprintf("%s_%s_%s_%s", "ContributeToTravelPlan",
-				network, token, envirnoment),
-			Transfer: fmt.Sprintf("%s_%s_%s_%s", "Transfer",
-				network, token, envirnoment),
-		},
+		LogInfo:   loggerInfo,
 	}
 
-	rw := travelsaver.ReadWriter{
-		WSS:             wss,
-		HTTPS:           https,
-		ContractAddress: contractAddress,
-		BQ:              bq,
-	}
-
-	err := rw.New()
+	err = maker.PullMsgs()
 	if err != nil {
-		log.Println(err)
-	}
-
-	err = rw.Subscribe()
-	if err != nil {
-		log.Println(err)
+		loggerErr.Println(err)
 	}
 }

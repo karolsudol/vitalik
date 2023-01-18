@@ -120,7 +120,9 @@ func (log LogContributeToTravelPlan) instert(bq *BQ, clientBQ *bigquery.Client, 
 }
 
 type LogClaimTravelPlan struct {
-	ID *big.Int
+	ID     *big.Int
+	Owner  common.Address
+	Amount *big.Int
 }
 
 func (log LogClaimTravelPlan) instert(bq *BQ, clientBQ *bigquery.Client, ctx context.Context, t TravelSaverTravelPlan) error {
@@ -137,6 +139,25 @@ func (log LogClaimTravelPlan) instert(bq *BQ, clientBQ *bigquery.Client, ctx con
 			CreatedAt:         time.Time(time.Unix(t.CreatedAt.Int64(), 0)),
 			Claimed:           true,
 			ClaimedAt:         time.Now(),
+		},
+	}
+	if err := inserter.Put(ctx, items); err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func (log LogClaimTravelPlan) instertClaim(bq *BQ, clientBQ *bigquery.Client, ctx context.Context) error {
+
+	inserter := clientBQ.Dataset(bq.DatasetID).Table(bq.Tables.ClaimedTravelPlan).Inserter()
+
+	items := []*claimedTravelPlanBQ{
+
+		{ID: int(log.ID.Int64()),
+			Owner:  string(log.Owner.Hex()),
+			Amount: float64(log.Amount.Int64()),
+			TS:     time.Now(),
 		},
 	}
 	if err := inserter.Put(ctx, items); err != nil {
@@ -272,7 +293,7 @@ func newLogSigHash() *logSigHash {
 	logCreatedTravelPlanSig := []byte("CreatedTravelPlan(uint256,address,(address,uint256,uint256,uint256,uint256,uint256,uint256,bool))")
 	logStartPaymentPlanIntervalSig := []byte("StartPaymentPlanInterval(uint256,uint256,uint256,uint256)")
 	LogContributeToTravelPlanSig := []byte("ContributeToTravelPlan(uint256,address,uint256)")
-	logClaimTravelPlanSig := []byte("ClaimTravelPlan(uint256)")
+	logClaimTravelPlanSig := []byte("ClaimTravelPlan(uint256,address,uint256)")
 	logTransferSig := []byte("Transfer(address,address,uint256)")
 	logCancelPaymentPlanSig := []byte("CancelPaymentPlan(uint256,address,(uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address,bool))")
 	logPaymentPlanIntervalEndedSig := []byte("PaymentPlanIntervalEnded(uint256,uint256)")

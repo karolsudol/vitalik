@@ -1,7 +1,7 @@
 // Code generated - DO NOT EDIT.
 // This file is a generated binding and any manual changes will be lost.
 
-package travelsaver
+package maker
 
 import (
 	"errors"
@@ -57,7 +57,7 @@ type TravelSaverTravelPlan struct {
 
 // TravelSaverMetaData contains all meta data concerning the TravelSaver contract.
 var TravelSaverMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"ERC20_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"operatorWallet_\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountSent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalsProcessed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nextTransferOn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"interval\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"alive\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structTravelSaver.PaymentPlan\",\"name\":\"paymentPlan\",\"type\":\"tuple\"}],\"name\":\"CancelPaymentPlan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"ClaimTravelPlan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contributor\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"ContributeToTravelPlan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountSent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalsProcessed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nextTransferOn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"interval\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"alive\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structTravelSaver.PaymentPlan\",\"name\":\"paymentPlan\",\"type\":\"tuple\"}],\"name\":\"CreatedPaymentPlan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorUserID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"contributedAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"createdAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimedAt\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"claimed\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structTravelSaver.TravelPlan\",\"name\":\"travelPlan\",\"type\":\"tuple\"}],\"name\":\"CreatedTravelPlan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountSent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalsProcessed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nextTransferOn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"interval\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"alive\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structTravelSaver.PaymentPlan\",\"name\":\"paymentPlan\",\"type\":\"tuple\"}],\"name\":\"EndPaymentPlan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"intervalNo\",\"type\":\"uint256\"}],\"name\":\"PaymentPlanIntervalEnded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"callableOn\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"intervalNo\",\"type\":\"uint256\"}],\"name\":\"StartPaymentPlanInterval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"}],\"name\":\"cancelPaymentPlan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"claimTravelPlan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"contributeToTravelPlan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalLength\",\"type\":\"uint256\"}],\"name\":\"createPaymentPlan\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"operatorPlanID_\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorUserID_\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalLength\",\"type\":\"uint256\"}],\"name\":\"createTravelPaymentPlan\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"paymentPlanID\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"operatorPlanID_\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorUserID_\",\"type\":\"uint256\"}],\"name\":\"createTravelPlan\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"}],\"name\":\"getPaymentPlanDetails\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountSent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalsProcessed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nextTransferOn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"interval\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"alive\",\"type\":\"bool\"}],\"internalType\":\"structTravelSaver.PaymentPlan\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"}],\"name\":\"getTravelPlanDetails\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorUserID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"contributedAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"createdAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimedAt\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"claimed\",\"type\":\"bool\"}],\"internalType\":\"structTravelSaver.TravelPlan\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"operatorWallet\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"paymentPlans\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountSent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalsProcessed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nextTransferOn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"interval\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"alive\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"}],\"name\":\"runInterval\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"IDs\",\"type\":\"uint256[]\"}],\"name\":\"runIntervals\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"contractIERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"travelPlans\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorUserID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"contributedAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"createdAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimedAt\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"claimed\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
+	ABI: "[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"ERC20_\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"operatorWallet_\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountSent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalsProcessed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nextTransferOn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"interval\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"alive\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structTravelSaver.PaymentPlan\",\"name\":\"paymentPlan\",\"type\":\"tuple\"}],\"name\":\"CancelPaymentPlan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"}],\"name\":\"ClaimTravelPlan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"contributor\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"ContributeToTravelPlan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountSent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalsProcessed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nextTransferOn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"interval\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"alive\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structTravelSaver.PaymentPlan\",\"name\":\"paymentPlan\",\"type\":\"tuple\"}],\"name\":\"CreatedPaymentPlan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorUserID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"contributedAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"createdAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimedAt\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"claimed\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structTravelSaver.TravelPlan\",\"name\":\"travelPlan\",\"type\":\"tuple\"}],\"name\":\"CreatedTravelPlan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"components\":[{\"internalType\":\"uint256\",\"name\":\"travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountSent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalsProcessed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nextTransferOn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"interval\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"alive\",\"type\":\"bool\"}],\"indexed\":false,\"internalType\":\"structTravelSaver.PaymentPlan\",\"name\":\"paymentPlan\",\"type\":\"tuple\"}],\"name\":\"EndPaymentPlan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"intervalNo\",\"type\":\"uint256\"}],\"name\":\"PaymentPlanIntervalEnded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"callableOn\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"intervalNo\",\"type\":\"uint256\"}],\"name\":\"StartPaymentPlanInterval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"}],\"name\":\"cancelPaymentPlan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"}],\"name\":\"claimTravelPlan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"contributeToTravelPlan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"contributedAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalLength\",\"type\":\"uint256\"}],\"name\":\"createPaymentPlan\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"operatorPlanID_\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorUserID_\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalLength\",\"type\":\"uint256\"}],\"name\":\"createTravelPaymentPlan\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"paymentPlanID\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"operatorPlanID_\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorUserID_\",\"type\":\"uint256\"}],\"name\":\"createTravelPlan\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"}],\"name\":\"getPaymentPlanDetails\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"travelPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountSent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amountPerInterval\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalIntervals\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"intervalsProcessed\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nextTransferOn\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"interval\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"alive\",\"type\":\"bool\"}],\"internalType\":\"structTravelSaver.PaymentPlan\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"}],\"name\":\"getTravelPlanDetails\",\"outputs\":[{\"components\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorUserID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"contributedAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"createdAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimedAt\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"claimed\",\"type\":\"bool\"}],\"internalType\":\"structTravelSaver.TravelPlan\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"operatorWallet\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"}],\"name\":\"runInterval\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256[]\",\"name\":\"IDs\",\"type\":\"uint256[]\"}],\"name\":\"runIntervals\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"contractIERC20\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"travelPlans\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"ID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorPlanID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"operatorUserID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"contributedAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"createdAt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"claimedAt\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"claimed\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}]",
 }
 
 // TravelSaverABI is the input ABI used to generate the binding from.
@@ -206,6 +206,37 @@ func (_TravelSaver *TravelSaverTransactorRaw) Transact(opts *bind.TransactOpts, 
 	return _TravelSaver.Contract.contract.Transact(opts, method, params...)
 }
 
+// ContributedAmount is a free data retrieval call binding the contract method 0x6dcfb52b.
+//
+// Solidity: function contributedAmount(uint256 , address ) view returns(uint256)
+func (_TravelSaver *TravelSaverCaller) ContributedAmount(opts *bind.CallOpts, arg0 *big.Int, arg1 common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _TravelSaver.contract.Call(opts, &out, "contributedAmount", arg0, arg1)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// ContributedAmount is a free data retrieval call binding the contract method 0x6dcfb52b.
+//
+// Solidity: function contributedAmount(uint256 , address ) view returns(uint256)
+func (_TravelSaver *TravelSaverSession) ContributedAmount(arg0 *big.Int, arg1 common.Address) (*big.Int, error) {
+	return _TravelSaver.Contract.ContributedAmount(&_TravelSaver.CallOpts, arg0, arg1)
+}
+
+// ContributedAmount is a free data retrieval call binding the contract method 0x6dcfb52b.
+//
+// Solidity: function contributedAmount(uint256 , address ) view returns(uint256)
+func (_TravelSaver *TravelSaverCallerSession) ContributedAmount(arg0 *big.Int, arg1 common.Address) (*big.Int, error) {
+	return _TravelSaver.Contract.ContributedAmount(&_TravelSaver.CallOpts, arg0, arg1)
+}
+
 // GetPaymentPlanDetails is a free data retrieval call binding the contract method 0xd955bdc9.
 //
 // Solidity: function getPaymentPlanDetails(uint256 ID) view returns((uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,address,bool))
@@ -297,96 +328,6 @@ func (_TravelSaver *TravelSaverSession) OperatorWallet() (common.Address, error)
 // Solidity: function operatorWallet() view returns(address)
 func (_TravelSaver *TravelSaverCallerSession) OperatorWallet() (common.Address, error) {
 	return _TravelSaver.Contract.OperatorWallet(&_TravelSaver.CallOpts)
-}
-
-// PaymentPlans is a free data retrieval call binding the contract method 0x9d920688.
-//
-// Solidity: function paymentPlans(uint256 ) view returns(uint256 travelPlanID, uint256 ID, uint256 totalAmount, uint256 amountSent, uint256 amountPerInterval, uint256 totalIntervals, uint256 intervalsProcessed, uint256 nextTransferOn, uint256 interval, address sender, bool alive)
-func (_TravelSaver *TravelSaverCaller) PaymentPlans(opts *bind.CallOpts, arg0 *big.Int) (struct {
-	TravelPlanID       *big.Int
-	ID                 *big.Int
-	TotalAmount        *big.Int
-	AmountSent         *big.Int
-	AmountPerInterval  *big.Int
-	TotalIntervals     *big.Int
-	IntervalsProcessed *big.Int
-	NextTransferOn     *big.Int
-	Interval           *big.Int
-	Sender             common.Address
-	Alive              bool
-}, error) {
-	var out []interface{}
-	err := _TravelSaver.contract.Call(opts, &out, "paymentPlans", arg0)
-
-	outstruct := new(struct {
-		TravelPlanID       *big.Int
-		ID                 *big.Int
-		TotalAmount        *big.Int
-		AmountSent         *big.Int
-		AmountPerInterval  *big.Int
-		TotalIntervals     *big.Int
-		IntervalsProcessed *big.Int
-		NextTransferOn     *big.Int
-		Interval           *big.Int
-		Sender             common.Address
-		Alive              bool
-	})
-	if err != nil {
-		return *outstruct, err
-	}
-
-	outstruct.TravelPlanID = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-	outstruct.ID = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
-	outstruct.TotalAmount = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
-	outstruct.AmountSent = *abi.ConvertType(out[3], new(*big.Int)).(**big.Int)
-	outstruct.AmountPerInterval = *abi.ConvertType(out[4], new(*big.Int)).(**big.Int)
-	outstruct.TotalIntervals = *abi.ConvertType(out[5], new(*big.Int)).(**big.Int)
-	outstruct.IntervalsProcessed = *abi.ConvertType(out[6], new(*big.Int)).(**big.Int)
-	outstruct.NextTransferOn = *abi.ConvertType(out[7], new(*big.Int)).(**big.Int)
-	outstruct.Interval = *abi.ConvertType(out[8], new(*big.Int)).(**big.Int)
-	outstruct.Sender = *abi.ConvertType(out[9], new(common.Address)).(*common.Address)
-	outstruct.Alive = *abi.ConvertType(out[10], new(bool)).(*bool)
-
-	return *outstruct, err
-
-}
-
-// PaymentPlans is a free data retrieval call binding the contract method 0x9d920688.
-//
-// Solidity: function paymentPlans(uint256 ) view returns(uint256 travelPlanID, uint256 ID, uint256 totalAmount, uint256 amountSent, uint256 amountPerInterval, uint256 totalIntervals, uint256 intervalsProcessed, uint256 nextTransferOn, uint256 interval, address sender, bool alive)
-func (_TravelSaver *TravelSaverSession) PaymentPlans(arg0 *big.Int) (struct {
-	TravelPlanID       *big.Int
-	ID                 *big.Int
-	TotalAmount        *big.Int
-	AmountSent         *big.Int
-	AmountPerInterval  *big.Int
-	TotalIntervals     *big.Int
-	IntervalsProcessed *big.Int
-	NextTransferOn     *big.Int
-	Interval           *big.Int
-	Sender             common.Address
-	Alive              bool
-}, error) {
-	return _TravelSaver.Contract.PaymentPlans(&_TravelSaver.CallOpts, arg0)
-}
-
-// PaymentPlans is a free data retrieval call binding the contract method 0x9d920688.
-//
-// Solidity: function paymentPlans(uint256 ) view returns(uint256 travelPlanID, uint256 ID, uint256 totalAmount, uint256 amountSent, uint256 amountPerInterval, uint256 totalIntervals, uint256 intervalsProcessed, uint256 nextTransferOn, uint256 interval, address sender, bool alive)
-func (_TravelSaver *TravelSaverCallerSession) PaymentPlans(arg0 *big.Int) (struct {
-	TravelPlanID       *big.Int
-	ID                 *big.Int
-	TotalAmount        *big.Int
-	AmountSent         *big.Int
-	AmountPerInterval  *big.Int
-	TotalIntervals     *big.Int
-	IntervalsProcessed *big.Int
-	NextTransferOn     *big.Int
-	Interval           *big.Int
-	Sender             common.Address
-	Alive              bool
-}, error) {
-	return _TravelSaver.Contract.PaymentPlans(&_TravelSaver.CallOpts, arg0)
 }
 
 // Token is a free data retrieval call binding the contract method 0xfc0c546a.
@@ -516,25 +457,25 @@ func (_TravelSaver *TravelSaverTransactorSession) CancelPaymentPlan(ID *big.Int)
 	return _TravelSaver.Contract.CancelPaymentPlan(&_TravelSaver.TransactOpts, ID)
 }
 
-// ClaimTravelPlan is a paid mutator transaction binding the contract method 0xa601c2c6.
+// ClaimTravelPlan is a paid mutator transaction binding the contract method 0xcf67dc41.
 //
-// Solidity: function claimTravelPlan(uint256 ID, uint256 value) returns()
-func (_TravelSaver *TravelSaverTransactor) ClaimTravelPlan(opts *bind.TransactOpts, ID *big.Int, value *big.Int) (*types.Transaction, error) {
-	return _TravelSaver.contract.Transact(opts, "claimTravelPlan", ID, value)
+// Solidity: function claimTravelPlan(uint256 ID) returns()
+func (_TravelSaver *TravelSaverTransactor) ClaimTravelPlan(opts *bind.TransactOpts, ID *big.Int) (*types.Transaction, error) {
+	return _TravelSaver.contract.Transact(opts, "claimTravelPlan", ID)
 }
 
-// ClaimTravelPlan is a paid mutator transaction binding the contract method 0xa601c2c6.
+// ClaimTravelPlan is a paid mutator transaction binding the contract method 0xcf67dc41.
 //
-// Solidity: function claimTravelPlan(uint256 ID, uint256 value) returns()
-func (_TravelSaver *TravelSaverSession) ClaimTravelPlan(ID *big.Int, value *big.Int) (*types.Transaction, error) {
-	return _TravelSaver.Contract.ClaimTravelPlan(&_TravelSaver.TransactOpts, ID, value)
+// Solidity: function claimTravelPlan(uint256 ID) returns()
+func (_TravelSaver *TravelSaverSession) ClaimTravelPlan(ID *big.Int) (*types.Transaction, error) {
+	return _TravelSaver.Contract.ClaimTravelPlan(&_TravelSaver.TransactOpts, ID)
 }
 
-// ClaimTravelPlan is a paid mutator transaction binding the contract method 0xa601c2c6.
+// ClaimTravelPlan is a paid mutator transaction binding the contract method 0xcf67dc41.
 //
-// Solidity: function claimTravelPlan(uint256 ID, uint256 value) returns()
-func (_TravelSaver *TravelSaverTransactorSession) ClaimTravelPlan(ID *big.Int, value *big.Int) (*types.Transaction, error) {
-	return _TravelSaver.Contract.ClaimTravelPlan(&_TravelSaver.TransactOpts, ID, value)
+// Solidity: function claimTravelPlan(uint256 ID) returns()
+func (_TravelSaver *TravelSaverTransactorSession) ClaimTravelPlan(ID *big.Int) (*types.Transaction, error) {
+	return _TravelSaver.Contract.ClaimTravelPlan(&_TravelSaver.TransactOpts, ID)
 }
 
 // ContributeToTravelPlan is a paid mutator transaction binding the contract method 0x2b06fa74.
@@ -886,15 +827,13 @@ func (it *TravelSaverClaimTravelPlanIterator) Close() error {
 
 // TravelSaverClaimTravelPlan represents a ClaimTravelPlan event raised by the TravelSaver contract.
 type TravelSaverClaimTravelPlan struct {
-	ID     *big.Int
-	Owner  common.Address
-	Amount *big.Int
-	Raw    types.Log // Blockchain specific contextual infos
+	ID  *big.Int
+	Raw types.Log // Blockchain specific contextual infos
 }
 
-// FilterClaimTravelPlan is a free log retrieval operation binding the contract event 0x486095ee3674fb24bd0a2fcf31db414056448c4f6e206484eae4bcbb17fea35a.
+// FilterClaimTravelPlan is a free log retrieval operation binding the contract event 0xed3f56ffe7a310d05b1c1e6ff348c01c760245c8cbf4fd85dcd0bc1c2e26f6ff.
 //
-// Solidity: event ClaimTravelPlan(uint256 indexed ID, address owner, uint256 amount)
+// Solidity: event ClaimTravelPlan(uint256 indexed ID)
 func (_TravelSaver *TravelSaverFilterer) FilterClaimTravelPlan(opts *bind.FilterOpts, ID []*big.Int) (*TravelSaverClaimTravelPlanIterator, error) {
 
 	var IDRule []interface{}
@@ -909,9 +848,9 @@ func (_TravelSaver *TravelSaverFilterer) FilterClaimTravelPlan(opts *bind.Filter
 	return &TravelSaverClaimTravelPlanIterator{contract: _TravelSaver.contract, event: "ClaimTravelPlan", logs: logs, sub: sub}, nil
 }
 
-// WatchClaimTravelPlan is a free log subscription operation binding the contract event 0x486095ee3674fb24bd0a2fcf31db414056448c4f6e206484eae4bcbb17fea35a.
+// WatchClaimTravelPlan is a free log subscription operation binding the contract event 0xed3f56ffe7a310d05b1c1e6ff348c01c760245c8cbf4fd85dcd0bc1c2e26f6ff.
 //
-// Solidity: event ClaimTravelPlan(uint256 indexed ID, address owner, uint256 amount)
+// Solidity: event ClaimTravelPlan(uint256 indexed ID)
 func (_TravelSaver *TravelSaverFilterer) WatchClaimTravelPlan(opts *bind.WatchOpts, sink chan<- *TravelSaverClaimTravelPlan, ID []*big.Int) (event.Subscription, error) {
 
 	var IDRule []interface{}
@@ -951,9 +890,9 @@ func (_TravelSaver *TravelSaverFilterer) WatchClaimTravelPlan(opts *bind.WatchOp
 	}), nil
 }
 
-// ParseClaimTravelPlan is a log parse operation binding the contract event 0x486095ee3674fb24bd0a2fcf31db414056448c4f6e206484eae4bcbb17fea35a.
+// ParseClaimTravelPlan is a log parse operation binding the contract event 0xed3f56ffe7a310d05b1c1e6ff348c01c760245c8cbf4fd85dcd0bc1c2e26f6ff.
 //
-// Solidity: event ClaimTravelPlan(uint256 indexed ID, address owner, uint256 amount)
+// Solidity: event ClaimTravelPlan(uint256 indexed ID)
 func (_TravelSaver *TravelSaverFilterer) ParseClaimTravelPlan(log types.Log) (*TravelSaverClaimTravelPlan, error) {
 	event := new(TravelSaverClaimTravelPlan)
 	if err := _TravelSaver.contract.UnpackLog(event, "ClaimTravelPlan", log); err != nil {
